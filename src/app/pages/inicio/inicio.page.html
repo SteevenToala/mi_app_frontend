@@ -3,7 +3,7 @@
   (searchTermChange)="onSearchChange($event)"
 ></app-header>
 
-<ion-content class="page-content" [fullscreen]="true">
+<ion-content class="page-content" [fullscreen]="false">
   <main class="page-layout">
     <section class="category-row" aria-label="Filtrar por categoría">
       <button
@@ -24,13 +24,14 @@
         </div>
 
         <div class="product-grid">
-          <button
-            type="button"
+          <article
             class="product-card"
             *ngFor="let product of filteredProducts"
             (click)="selectProduct(product)"
             [class.is-selected]="selectedProduct.id === product.id"
             [attr.aria-label]="'Ver detalle de ' + product.name + ', categoría ' + product.category + ', precio ' + product.price + ' dólares'"
+            tabindex="0"
+            (keydown.enter)="selectProduct(product)"
           >
             <div class="product-image">
               <img [src]="product.image" [alt]="product.alt" loading="lazy" />
@@ -40,8 +41,13 @@
               <p>{{ product.category }}</p>
               <h3>{{ product.name }}</h3>
               <strong>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</strong>
+
+              <div class="card-actions">
+                <button type="button" (click)="startEditProduct(product, $event)">Editar</button>
+                <button type="button" class="danger" (click)="deleteProduct(product.id, $event)">Eliminar</button>
+              </div>
             </div>
-          </button>
+          </article>
         </div>
       </div>
 
@@ -80,7 +86,99 @@
       </aside>
     </section>
 
-  </main>
-</ion-content>
+    <button type="button" class="fab-create" (click)="openFormModal()" aria-label="Agregar producto">
+      + Producto
+    </button>
 
-<app-footer></app-footer>
+    <div
+      class="form-modal"
+      *ngIf="isFormModalOpen"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="product-form-title"
+    >
+      <button class="form-modal-backdrop" type="button" (click)="cancelFormModal()" aria-label="Cerrar formulario"></button>
+
+      <article class="form-modal-panel">
+        <header class="form-modal-header">
+          <h3 id="product-form-title">{{ editingProductId ? 'Editar producto' : 'Agregar producto' }}</h3>
+          <button type="button" class="close-modal" (click)="cancelFormModal()">Cerrar</button>
+        </header>
+
+        <form class="product-form" (ngSubmit)="addOrUpdateProduct()">
+          <div class="form-grid">
+            <input name="name" [(ngModel)]="formProduct.name" type="text" placeholder="Nombre" required />
+            <input name="category" [(ngModel)]="formProduct.category" type="text" placeholder="Categoría" required />
+            <input name="price" [(ngModel)]="formProduct.price" type="number" min="0.01" step="0.01" placeholder="Precio" required />
+            <input name="image" [(ngModel)]="formProduct.image" type="url" placeholder="URL imagen" required />
+          </div>
+
+          <textarea
+            name="description"
+            [(ngModel)]="formProduct.description"
+            rows="2"
+            placeholder="Descripción"
+            required
+          ></textarea>
+
+          <input name="alt" [(ngModel)]="formProduct.alt" type="text" placeholder="Texto alternativo (opcional)" />
+
+          <div class="form-actions">
+            <button type="submit">{{ editingProductId ? 'Guardar cambios' : 'Agregar producto' }}</button>
+            <button *ngIf="editingProductId" type="button" class="ghost" (click)="cancelFormModal()">Cancelar</button>
+          </div>
+        </form>
+      </article>
+    </div>
+
+    <div
+      class="detail-modal"
+      *ngIf="isDetailModalOpen && selectedProduct as product"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mobile-detail-title"
+    >
+      <button
+        class="detail-modal-backdrop"
+        type="button"
+        (click)="closeDetailModal()"
+        aria-label="Cerrar detalle"
+      ></button>
+
+      <article class="detail-modal-panel">
+        <header class="detail-modal-header">
+          <h2 id="mobile-detail-title">Detalle del producto</h2>
+          <button type="button" class="close-modal" (click)="closeDetailModal()">Cerrar</button>
+        </header>
+
+        <div class="detail-modal-image">
+          <img [src]="product.image" [alt]="product.alt" />
+        </div>
+
+        <div class="detail-modal-copy">
+          <p class="detail-category">{{ product.category }}</p>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+
+          <dl>
+            <div>
+              <dt>Precio</dt>
+              <dd>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</dd>
+            </div>
+            <div>
+              <dt>Código</dt>
+              <dd>PRD-{{ product.id.toString().padStart(4, '0') }}</dd>
+            </div>
+            <div>
+              <dt>Estado</dt>
+              <dd>En stock</dd>
+            </div>
+          </dl>
+        </div>
+      </article>
+    </div>
+
+  </main>
+
+  <app-footer></app-footer>
+</ion-content>
