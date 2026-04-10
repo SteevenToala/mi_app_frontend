@@ -159,7 +159,8 @@
 
 .task-item {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: 'status title delete';
   align-items: center;
   gap: 0.75rem;
   padding: 0.85rem;
@@ -168,18 +169,24 @@
   border: 1px solid rgba(17, 24, 39, 0.08);
 }
 
-.task-item p {
+.task-title {
+  grid-area: title;
   margin: 0;
   font-weight: 600;
   color: #111827;
+  overflow-wrap: anywhere;
 }
 
-.task-item p.is-done {
+.task-title.is-done {
   color: #6b7280;
   text-decoration: line-through;
 }
 
 .task-status {
+  grid-area: status;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0 0.9rem;
   background: var(--app-secondary);
   color: #111827;
@@ -191,9 +198,26 @@
 }
 
 .task-delete {
+  grid-area: delete;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0 0.9rem;
   background: rgba(220, 38, 38, 0.1);
   color: #991b1b;
+}
+
+:host-context(.md) .task-status,
+:host-context(.md) .task-delete {
+  min-height: 2.15rem;
+  padding: 0.2rem 0.65rem;
+  border-radius: 0.7rem;
+  font-size: 0.78rem;
+}
+
+:host-context(.md) .task-title {
+  font-size: 0.9rem;
+  line-height: 1.25;
 }
 
 .task-modal {
@@ -246,6 +270,60 @@
   font-weight: 600;
 }
 
+@media (max-width: 980px) {
+  .task-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .task-header-actions {
+    justify-items: stretch;
+  }
+
+  .task-metrics {
+    justify-content: flex-start;
+  }
+
+  .task-add-trigger {
+    width: 100%;
+  }
+}
+
+@media (max-width: 860px) {
+  .task-item {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      'title title'
+      'status delete';
+    align-items: stretch;
+  }
+
+  .task-status,
+  .task-delete {
+    width: 100%;
+  }
+
+  :host-context(.md) .task-status,
+  :host-context(.md) .task-delete {
+    width: auto;
+    justify-self: start;
+  }
+
+  :host-context(.md) .task-item {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: 'title status delete';
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  :host-context(.md) .task-title {
+    font-size: 0.84rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
 @media (max-width: 720px) {
   .task-card {
     padding: 1rem;
@@ -289,9 +367,50 @@
   .task-modal-panel {
     border-radius: 1rem 1rem 0.7rem 0.7rem;
   }
+}
+
+@media (max-width: 480px) {
+  .task-card {
+    padding: 0.85rem;
+  }
+
+  .task-metrics {
+    gap: 0.35rem;
+  }
+
+  .task-metrics span {
+    font-size: 0.8rem;
+    padding: 0.38rem 0.62rem;
+  }
 
   .task-item {
     grid-template-columns: 1fr;
-    text-align: left;
+    grid-template-areas:
+      'title'
+      'status'
+      'delete';
+    padding: 0.75rem;
+    gap: 0.55rem;
+  }
+
+  :host-context(.md) .task-status,
+  :host-context(.md) .task-delete {
+    width: auto;
+    justify-self: start;
+  }
+
+  :host-context(.md) .task-item {
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    grid-template-areas: 'title status delete';
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  :host-context(.md) .task-title {
+    font-size: 0.8rem;
+  }
+
+  .task-modal-panel {
+    padding: 0.8rem;
   }
 }

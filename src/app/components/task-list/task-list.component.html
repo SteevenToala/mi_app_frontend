@@ -29,7 +29,7 @@
         {{ task.completed ? 'Completada' : 'Pendiente' }}
       </button>
 
-      <p [class.is-done]="task.completed">{{ task.title }}</p>
+      <p class="task-title" [class.is-done]="task.completed">{{ task.title }}</p>
 
       <button type="button" class="task-delete" (click)="deleteTask(task.id)">
         Eliminar
