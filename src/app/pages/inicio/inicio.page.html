@@ -1,0 +1,86 @@
+<app-header
+  [searchTerm]="searchTerm"
+  (searchTermChange)="onSearchChange($event)"
+></app-header>
+
+<ion-content class="page-content" [fullscreen]="true">
+  <main class="page-layout">
+    <section class="category-row" aria-label="Filtrar por categoría">
+      <button
+        type="button"
+        *ngFor="let category of categories"
+        [class.is-active]="selectedCategory === category"
+        (click)="selectedCategory = category"
+      >
+        {{ category }}
+      </button>
+    </section>
+
+    <section class="catalog-layout" aria-labelledby="catalog-section-heading">
+      <div class="catalog-list-panel">
+        <div class="section-heading">
+          <p class="hero-kicker">Listado</p>
+          <h2 id="catalog-section-heading">Productos disponibles</h2>
+        </div>
+
+        <div class="product-grid">
+          <button
+            type="button"
+            class="product-card"
+            *ngFor="let product of filteredProducts"
+            (click)="selectProduct(product)"
+            [class.is-selected]="selectedProduct.id === product.id"
+            [attr.aria-label]="'Ver detalle de ' + product.name + ', categoría ' + product.category + ', precio ' + product.price + ' dólares'"
+          >
+            <div class="product-image">
+              <img [src]="product.image" [alt]="product.alt" loading="lazy" />
+            </div>
+
+            <div class="product-copy">
+              <p>{{ product.category }}</p>
+              <h3>{{ product.name }}</h3>
+              <strong>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</strong>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <aside class="detail-panel" aria-labelledby="detail-heading">
+        <div class="section-heading">
+          <p class="hero-kicker">Detalle</p>
+          <h2 id="detail-heading">Producto seleccionado</h2>
+        </div>
+
+        <div class="detail-card" *ngIf="selectedProduct as product">
+          <div class="detail-image">
+            <img [src]="product.image" [alt]="product.alt" />
+          </div>
+
+          <div class="detail-copy">
+            <p class="detail-category">{{ product.category }}</p>
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}</p>
+
+            <dl>
+              <div>
+                <dt>Precio</dt>
+                <dd>{{ product.price | currency:'USD':'symbol':'1.2-2' }}</dd>
+              </div>
+              <div>
+                <dt>Código</dt>
+                <dd>PRD-{{ product.id.toString().padStart(4, '0') }}</dd>
+              </div>
+              <div>
+                <dt>Estado</dt>
+                <dd>En stock</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+  </main>
+</ion-content>
+
+<app-footer></app-footer>

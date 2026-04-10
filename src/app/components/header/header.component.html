@@ -1,0 +1,20 @@
+<header class="app-header" aria-label="Encabezado del catalogo">
+  <div class="app-toolbar">
+    <div class="top-row">
+      <div class="brand" aria-label="Identidad de la aplicación">
+        <h1 class="brand-title">Catalogos de producto</h1>
+      </div>
+
+      <div class="search-box">
+        <label class="sr-only" for="header-search-products">Buscar productos</label>
+        <input
+          id="header-search-products"
+          type="search"
+          [value]="searchTerm"
+          (input)="onSearchInput($event)"
+          placeholder="Buscar productos"
+        />
+      </div>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,59 @@
+<app-header></app-header>
+
+<ion-content class="page-content" [fullscreen]="true">
+  <main class="page-layout">
+    <section class="contact-hero" aria-labelledby="contact-title">
+      <p class="hero-kicker">Ruta secundaria</p>
+      <h1 id="contact-title">Contacto y organización del equipo frontend.</h1>
+      <p>
+        Esta pantalla muestra cómo el proyecto separa responsabilidades y reutiliza datos simulados desde un servicio.
+      </p>
+    </section>
+
+    <section class="contact-grid" aria-labelledby="team-heading">
+      <div class="contact-panel">
+        <div class="section-heading">
+          <p class="hero-kicker">Equipo</p>
+          <h2 id="team-heading">Personas de contacto</h2>
+        </div>
+
+        <div class="contact-list">
+          <article class="contact-card" *ngFor="let contact of contacts">
+            <p class="contact-role">{{ contact.role }}</p>
+            <h3>{{ contact.name }}</h3>
+            <dl>
+              <div>
+                <dt>Email</dt>
+                <dd><a [href]="'mailto:' + contact.email">{{ contact.email }}</a></dd>
+              </div>
+              <div>
+                <dt>Teléfono</dt>
+                <dd><a [href]="'tel:' + contact.phone">{{ contact.phone }}</a></dd>
+              </div>
+              <div>
+                <dt>Horario</dt>
+                <dd>{{ contact.schedule }}</dd>
+              </div>
+            </dl>
+          </article>
+        </div>
+      </div>
+
+      <aside class="contact-panel info-panel">
+        <div class="section-heading">
+          <p class="hero-kicker">Flujo</p>
+          <h2>Cómo se organiza el frontend</h2>
+        </div>
+
+        <ol>
+          <li>Las rutas cargan páginas independientes con `loadComponent`.</li>
+          <li>Los componentes compartidos resuelven cabecera, pie y tareas.</li>
+          <li>El servicio centraliza datos simulados para catálogo y contacto.</li>
+          <li>El layout responde con una estructura mobile-first y media queries.</li>
+        </ol>
+      </aside>
+    </section>
+  </main>
+</ion-content>
+
+<app-footer></app-footer>

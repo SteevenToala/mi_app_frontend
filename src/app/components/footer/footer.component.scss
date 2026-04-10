@@ -1,0 +1,46 @@
+:host {
+  display: block;
+}
+
+.app-footer {
+  padding: 0 1rem 1rem;
+}
+
+.app-footer-toolbar {
+  --background: rgba(17, 24, 39, 0.94);
+  --color: #ffffff;
+  border-radius: 1.1rem;
+  box-shadow: var(--app-shadow);
+  overflow: hidden;
+}
+
+.footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  width: 100%;
+  padding: 0.95rem 1rem;
+}
+
+.footer-content p,
+.footer-content span {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.footer-content span {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+@media (max-width: 720px) {
+  .app-footer {
+    padding-inline: 0.75rem;
+  }
+
+  .footer-content {
+    text-align: center;
+    justify-content: center;
+  }
+}
