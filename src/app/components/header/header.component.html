@@ -1,11 +1,22 @@
 <header class="app-header" aria-label="Encabezado del catalogo">
   <div class="app-toolbar">
-    <div class="top-row">
+    <div class="top-row" [class.no-search]="!showSearch">
       <div class="brand" aria-label="Identidad de la aplicación">
         <h1 class="brand-title">Catalogo de productos</h1>
       </div>
 
-      <div class="search-box">
+      <nav class="header-nav" aria-label="Navegacion principal">
+        <a
+          *ngFor="let item of navItems"
+          [routerLink]="item.path"
+          routerLinkActive="is-active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ item.label }}
+        </a>
+      </nav>
+
+      <div class="search-box" *ngIf="showSearch">
         <label class="sr-only" for="header-search-products">Buscar productos</label>
         <input
           id="header-search-products"

@@ -1,27 +1,28 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonContent } from '@ionic/angular/standalone';
 
 import { FooterComponent } from '../../components/footer/footer.component';
 import { HeaderComponent } from '../../components/header/header.component';
+import { TaskListComponent } from '../../components/task-list/task-list.component';
 import { CatalogProduct, MockDataService } from '../../services/mock-data.service';
 
 @Component({
   selector: 'app-inicio',
   standalone: true,
-  imports: [CommonModule, FormsModule, IonContent, HeaderComponent, FooterComponent],
+  imports: [CommonModule, FormsModule, IonContent, HeaderComponent, FooterComponent, TaskListComponent],
   templateUrl: './inicio.page.html',
   styleUrls: ['./inicio.page.scss'],
 })
-export class InicioPage {
-  products: CatalogProduct[] = this.mockDataService.getProducts();
+export class InicioPage implements OnInit {
+  products: CatalogProduct[] = [];
 
   searchTerm = '';
 
   selectedCategory = 'Todos';
 
-  selectedProduct: CatalogProduct = this.products[0];
+  selectedProduct: CatalogProduct | null = null;
 
   isDetailModalOpen = false;
 
@@ -46,6 +47,16 @@ export class InicioPage {
   };
 
   constructor(private readonly mockDataService: MockDataService) {}
+
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.mockDataService.initData();
+    } catch {
+      // Keep UI usable even if another dataset fails during initialization.
+    }
+    this.products = this.mockDataService.getProducts();
+    this.selectedProduct = this.products.length ? this.products[0] : null;
+  }
 
   get categories(): string[] {
     return ['Todos', ...new Set(this.products.map((product) => product.category))];
@@ -108,7 +119,7 @@ export class InicioPage {
           : product,
       );
 
-      if (this.selectedProduct.id === this.editingProductId) {
+      if (this.selectedProduct?.id === this.editingProductId) {
         const updated = this.products.find((product) => product.id === this.editingProductId);
         if (updated) {
           this.selectedProduct = updated;
@@ -133,6 +144,7 @@ export class InicioPage {
       this.selectedProduct = newProduct;
     }
 
+    this.mockDataService.setProducts(this.products);
     this.closeFormModal();
     this.resetForm();
   }
@@ -155,8 +167,8 @@ export class InicioPage {
     event?.stopPropagation();
     this.products = this.products.filter((product) => product.id !== productId);
 
-    if (this.selectedProduct.id === productId && this.products.length > 0) {
-      this.selectedProduct = this.products[0];
+    if (this.selectedProduct?.id === productId) {
+      this.selectedProduct = this.products.length ? this.products[0] : null;
     }
 
     if (this.selectedCategory !== 'Todos' && !this.products.some((p) => p.category === this.selectedCategory)) {
@@ -166,6 +178,8 @@ export class InicioPage {
     if (this.editingProductId === productId) {
       this.resetForm();
     }
+
+    this.mockDataService.setProducts(this.products);
   }
 
   resetForm(): void {

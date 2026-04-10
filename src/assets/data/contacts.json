@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Ana Lopez",
+    "role": "Diseno UI/UX",
+    "email": "ana.lopez@ape2.dev",
+    "phone": "+34 600 123 456",
+    "schedule": "Lun a vie, 09:00 - 17:00"
+  },
+  {
+    "id": 2,
+    "name": "Carlos Perez",
+    "role": "Frontend",
+    "email": "carlos.perez@ape2.dev",
+    "phone": "+34 600 222 333",
+    "schedule": "Lun a jue, 10:00 - 18:00"
+  },
+  {
+    "id": 3,
+    "name": "Maria Torres",
+    "role": "Soporte y pruebas",
+    "email": "maria.torres@ape2.dev",
+    "phone": "+34 600 987 654",
+    "schedule": "Lun a vie, 08:00 - 15:00"
+  }
+]

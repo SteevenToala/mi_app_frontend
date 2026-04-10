@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonContent } from '@ionic/angular/standalone';
 
 import { FooterComponent } from '../../components/footer/footer.component';
@@ -13,8 +13,13 @@ import { ContactCard, MockDataService } from '../../services/mock-data.service';
   templateUrl: './contacto.page.html',
   styleUrls: ['./contacto.page.scss'],
 })
-export class ContactoPage {
-  readonly contacts: ContactCard[] = this.mockDataService.getContacts();
+export class ContactoPage implements OnInit {
+  contacts: ContactCard[] = [];
 
   constructor(private readonly mockDataService: MockDataService) {}
+
+  async ngOnInit(): Promise<void> {
+    await this.mockDataService.initData();
+    this.contacts = this.mockDataService.getContacts();
+  }
 }

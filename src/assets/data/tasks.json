@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "title": "Revisar wireframe de Figma",
+    "completed": true
+  },
+  {
+    "id": 2,
+    "title": "Capturar pantalla responsiva",
+    "completed": false
+  },
+  {
+    "id": 3,
+    "title": "Documentar flujo frontend",
+    "completed": false
+  }
+]

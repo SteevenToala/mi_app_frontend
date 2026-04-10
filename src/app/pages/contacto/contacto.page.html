@@ -1,15 +1,7 @@
 <app-header></app-header>
 
-<ion-content class="page-content" [fullscreen]="true">
+<ion-content class="page-content" [fullscreen]="false">
   <main class="page-layout">
-    <section class="contact-hero" aria-labelledby="contact-title">
-      <p class="hero-kicker">Ruta secundaria</p>
-      <h1 id="contact-title">Contacto y organización del equipo frontend.</h1>
-      <p>
-        Esta pantalla muestra cómo el proyecto separa responsabilidades y reutiliza datos simulados desde un servicio.
-      </p>
-    </section>
-
     <section class="contact-grid" aria-labelledby="team-heading">
       <div class="contact-panel">
         <div class="section-heading">
@@ -38,22 +30,8 @@
           </article>
         </div>
       </div>
-
-      <aside class="contact-panel info-panel">
-        <div class="section-heading">
-          <p class="hero-kicker">Flujo</p>
-          <h2>Cómo se organiza el frontend</h2>
-        </div>
-
-        <ol>
-          <li>Las rutas cargan páginas independientes con `loadComponent`.</li>
-          <li>Los componentes compartidos resuelven cabecera, pie y tareas.</li>
-          <li>El servicio centraliza datos simulados para catálogo y contacto.</li>
-          <li>El layout responde con una estructura mobile-first y media queries.</li>
-        </ol>
-      </aside>
     </section>
   </main>
-</ion-content>
 
-<app-footer></app-footer>
+  <app-footer></app-footer>
+</ion-content>

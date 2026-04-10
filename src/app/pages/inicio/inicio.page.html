@@ -28,7 +28,7 @@
             class="product-card"
             *ngFor="let product of filteredProducts"
             (click)="selectProduct(product)"
-            [class.is-selected]="selectedProduct.id === product.id"
+            [class.is-selected]="selectedProduct?.id === product.id"
             [attr.aria-label]="'Ver detalle de ' + product.name + ', categoría ' + product.category + ', precio ' + product.price + ' dólares'"
             tabindex="0"
             (keydown.enter)="selectProduct(product)"
@@ -57,7 +57,7 @@
           <h2 id="detail-heading">Producto seleccionado</h2>
         </div>
 
-        <div class="detail-card" *ngIf="selectedProduct as product">
+        <div class="detail-card" *ngIf="selectedProduct as product; else emptyDetail">
           <div class="detail-image">
             <img [src]="product.image" [alt]="product.alt" />
           </div>
@@ -83,6 +83,9 @@
             </dl>
           </div>
         </div>
+        <ng-template #emptyDetail>
+          <p class="detail-empty">No hay productos disponibles.</p>
+        </ng-template>
       </aside>
     </section>
 
@@ -97,7 +100,7 @@
       aria-modal="true"
       aria-labelledby="product-form-title"
     >
-      <button class="form-modal-backdrop" type="button" (click)="cancelFormModal()" aria-label="Cerrar formulario"></button>
+      <div class="form-modal-backdrop" (click)="cancelFormModal()" aria-hidden="true"></div>
 
       <article class="form-modal-panel">
         <header class="form-modal-header">
@@ -138,12 +141,11 @@
       aria-modal="true"
       aria-labelledby="mobile-detail-title"
     >
-      <button
+      <div
         class="detail-modal-backdrop"
-        type="button"
         (click)="closeDetailModal()"
-        aria-label="Cerrar detalle"
-      ></button>
+        aria-hidden="true"
+      ></div>
 
       <article class="detail-modal-panel">
         <header class="detail-modal-header">
@@ -177,6 +179,8 @@
         </div>
       </article>
     </div>
+
+    <app-task-list></app-task-list>
 
   </main>
 

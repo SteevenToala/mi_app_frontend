@@ -40,19 +40,31 @@
 }
 
 .contact-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
-  gap: 1rem;
+  display: block;
   margin-top: 1rem;
 }
 
 .contact-panel {
   padding: 1.1rem;
+  color: #111827;
+}
+
+.section-heading {
+  color: #111827;
+}
+
+.section-heading .hero-kicker {
+  margin: 0 0 0.25rem;
+  color: #6b7280;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .section-heading h2 {
   margin: 0;
   font-size: 1.3rem;
+  color: #111827;
 }
 
 .contact-list {
@@ -78,6 +90,7 @@
 
 .contact-card h3 {
   margin: 0.35rem 0 0.75rem;
+  color: #111827;
 }
 
 .contact-card dl {
@@ -86,8 +99,7 @@
   margin: 0;
 }
 
-.contact-card dl div,
-.info-panel ol li {
+.contact-card dl div {
   padding-top: 0.65rem;
   border-top: 1px solid rgba(17, 24, 39, 0.08);
 }
@@ -98,35 +110,28 @@
   gap: 1rem;
 }
 
-.contact-card dt,
-.info-panel li {
+.contact-card dt {
   color: var(--app-muted);
 }
 
 .contact-card dd {
   margin: 0;
   text-align: right;
+  color: #111827;
 }
 
-.info-panel ol {
-  margin: 1rem 0 0;
-  padding-left: 1.15rem;
+.contact-card a {
+  color: #111827;
+  font-weight: 600;
 }
 
-.info-panel li {
-  padding-bottom: 0.85rem;
-  line-height: 1.55;
-}
-
-@media (max-width: 1024px) {
-  .contact-grid {
-    grid-template-columns: 1fr;
-  }
+.contact-card a:hover {
+  text-decoration: underline;
 }
 
 @media (max-width: 720px) {
   .page-layout {
-    width: min(100% - 1rem, 1180px);
+    width: min(1180px, calc(100% - 1rem));
     padding-top: 0.75rem;
   }
 

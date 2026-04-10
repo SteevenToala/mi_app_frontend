@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 
 export interface CatalogProduct {
   id: number;
@@ -19,99 +21,123 @@ export interface ContactCard {
   schedule: string;
 }
 
+export interface TaskItem {
+  id: number;
+  title: string;
+  completed: boolean;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class MockDataService {
-  private readonly products: CatalogProduct[] = [
-    {
-      id: 1,
-      name: 'Spray Botella Rosa',
-      category: 'Cuidado personal',
-      price: 24.99,
-      image: 'https://images.unsplash.com/photo-1617537230936-bb8c9327e84f?w=900&q=80',
-      description: 'Botella minimalista para cuidado personal con estética limpia y funcional.',
-      alt: 'Botella de spray rosa y blanca sobre fondo neutro',
-    },
-    {
-      id: 2,
-      name: 'Set de Té Cerámica',
-      category: 'Hogar',
-      price: 45,
-      image: 'https://images.unsplash.com/photo-1626897885636-dd68020cc52a?w=900&q=80',
-      description: 'Juego de té elegante con una paleta sobria para una presentación cuidada.',
-      alt: 'Tetera de cerámica blanca con taza sobre fondo claro',
-    },
-    {
-      id: 3,
-      name: 'Botella Cosmética',
-      category: 'Belleza',
-      price: 32.5,
-      image: 'https://images.unsplash.com/photo-1626897844971-aef92643f056?w=900&q=80',
-      description: 'Envase premium para productos de belleza con diseño simple y reconocible.',
-      alt: 'Botella cosmética blanca y marrón con etiqueta elegante',
-    },
-    {
-      id: 4,
-      name: 'Gafas Minimalistas',
-      category: 'Accesorios',
-      price: 89,
-      image: 'https://images.unsplash.com/photo-1711564354334-ee51baa830c2?w=900&q=80',
-      description: 'Montura delgada y contemporánea para una lectura rápida de producto.',
-      alt: 'Par de gafas con montura delgada sobre mesa blanca',
-    },
-    {
-      id: 5,
-      name: 'Perfume Luxury',
-      category: 'Fragancias',
-      price: 125,
-      image: 'https://images.unsplash.com/photo-1666621630026-862eea07236c?w=900&q=80',
-      description: 'Fragancia exclusiva en botella de vidrio con apariencia sofisticada.',
-      alt: 'Botella de perfume de vidrio transparente sobre fondo claro',
-    },
-    {
-      id: 6,
-      name: 'Gafas Reading',
-      category: 'Accesorios',
-      price: 65,
-      image: 'https://images.unsplash.com/photo-1711564354293-30760984899e?w=900&q=80',
-      description: 'Línea de accesorios con enfoque en comodidad, contraste y lectura rápida.',
-      alt: 'Gafas de lectura sobre papel blanco con sombras suaves',
-    },
-  ];
+  private static readonly PRODUCTS_STORAGE_KEY = 'ape2_products_db';
 
-  private readonly contacts: ContactCard[] = [
-    {
-      id: 1,
-      name: 'Ana López',
-      role: 'Diseño UI/UX',
-      email: 'ana.lopez@ape2.dev',
-      phone: '+34 600 123 456',
-      schedule: 'Lun a vie, 09:00 - 17:00',
-    },
-    {
-      id: 2,
-      name: 'Carlos Pérez',
-      role: 'Frontend',
-      email: 'carlos.perez@ape2.dev',
-      phone: '+34 600 222 333',
-      schedule: 'Lun a jue, 10:00 - 18:00',
-    },
-    {
-      id: 3,
-      name: 'María Torres',
-      role: 'Soporte y pruebas',
-      email: 'maria.torres@ape2.dev',
-      phone: '+34 600 987 654',
-      schedule: 'Lun a vie, 08:00 - 15:00',
-    },
-  ];
+  private static readonly CONTACTS_STORAGE_KEY = 'ape2_contacts_db';
+
+  private static readonly TASKS_STORAGE_KEY = 'ape2_tasks_db';
+
+  private products: CatalogProduct[] = [];
+
+  private contacts: ContactCard[] = [];
+
+  private tasks: TaskItem[] = [];
+
+  private initialized = false;
+
+  constructor(private readonly httpClient: HttpClient) {}
+
+  async initData(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
+    const storedProducts = this.getFromStorage<CatalogProduct[]>(MockDataService.PRODUCTS_STORAGE_KEY);
+    const storedContacts = this.getFromStorage<ContactCard[]>(MockDataService.CONTACTS_STORAGE_KEY);
+    const storedTasks = this.getFromStorage<TaskItem[]>(MockDataService.TASKS_STORAGE_KEY);
+
+    if (storedProducts?.length) {
+      this.products = storedProducts;
+    } else {
+      this.products = await this.loadJsonOrFallback<CatalogProduct[]>('assets/data/products.json', []);
+      this.persistProducts(this.products);
+    }
+
+    if (storedContacts?.length) {
+      this.contacts = storedContacts;
+    } else {
+      this.contacts = await this.loadJsonOrFallback<ContactCard[]>('assets/data/contacts.json', []);
+      this.persistContacts(this.contacts);
+    }
+
+    if (storedTasks?.length) {
+      this.tasks = storedTasks;
+    } else {
+      this.tasks = await this.loadJsonOrFallback<TaskItem[]>('assets/data/tasks.json', []);
+      this.persistTasks(this.tasks);
+    }
+
+    this.initialized = true;
+  }
 
   getProducts(): CatalogProduct[] {
     return [...this.products];
   }
 
+  setProducts(products: CatalogProduct[]): void {
+    this.products = [...products];
+    this.persistProducts(this.products);
+  }
+
   getContacts(): ContactCard[] {
     return [...this.contacts];
+  }
+
+  getTasks(): TaskItem[] {
+    return [...this.tasks];
+  }
+
+  setTasks(tasks: TaskItem[]): void {
+    this.tasks = [...tasks];
+    this.persistTasks(this.tasks);
+  }
+
+  private async loadJson<T>(path: string): Promise<T> {
+    return firstValueFrom(this.httpClient.get<T>(path));
+  }
+
+  private async loadJsonOrFallback<T>(path: string, fallback: T): Promise<T> {
+    try {
+      return await this.loadJson<T>(path);
+    } catch {
+      return fallback;
+    }
+  }
+
+  private getFromStorage<T>(key: string): T | null {
+    const raw = localStorage.getItem(key);
+
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(raw) as T;
+    } catch {
+      localStorage.removeItem(key);
+      return null;
+    }
+  }
+
+  private persistProducts(products: CatalogProduct[]): void {
+    localStorage.setItem(MockDataService.PRODUCTS_STORAGE_KEY, JSON.stringify(products));
+  }
+
+  private persistContacts(contacts: ContactCard[]): void {
+    localStorage.setItem(MockDataService.CONTACTS_STORAGE_KEY, JSON.stringify(contacts));
+  }
+
+  private persistTasks(tasks: TaskItem[]): void {
+    localStorage.setItem(MockDataService.TASKS_STORAGE_KEY, JSON.stringify(tasks));
   }
 }

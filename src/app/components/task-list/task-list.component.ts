@@ -1,12 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface TaskItem {
-  id: number;
-  title: string;
-  completed: boolean;
-}
+import { MockDataService, TaskItem } from '../../services/mock-data.service';
 
 @Component({
   selector: 'app-task-list',
@@ -15,19 +10,31 @@ interface TaskItem {
   templateUrl: './task-list.component.html',
   styleUrls: ['./task-list.component.scss'],
 })
-export class TaskListComponent {
-  newTask = '';
+export class TaskListComponent implements OnInit {
+  taskForm = {
+    title: '',
+  };
+
+  isTaskModalOpen = false;
 
   private nextId = 4;
 
-  tasks: TaskItem[] = [
-    { id: 1, title: 'Revisar wireframe de Figma', completed: true },
-    { id: 2, title: 'Capturar pantalla responsiva', completed: false },
-    { id: 3, title: 'Documentar flujo frontend', completed: false },
-  ];
+  tasks: TaskItem[] = [];
+
+  constructor(private readonly mockDataService: MockDataService) {}
+
+  async ngOnInit(): Promise<void> {
+    try {
+      await this.mockDataService.initData();
+    } catch {
+      // Keep tasks section interactive with whatever data is already available.
+    }
+    this.tasks = this.mockDataService.getTasks();
+    this.nextId = this.tasks.length ? Math.max(...this.tasks.map((task) => task.id)) + 1 : 1;
+  }
 
   addTask(): void {
-    const title = this.newTask.trim();
+    const title = this.taskForm.title.trim();
 
     if (!title) {
       return;
@@ -37,17 +44,34 @@ export class TaskListComponent {
       { id: this.nextId++, title, completed: false },
       ...this.tasks,
     ];
-    this.newTask = '';
+    this.closeTaskModal();
+    this.resetTaskForm();
+    this.persistTasks();
+  }
+
+  openTaskModal(): void {
+    this.isTaskModalOpen = true;
+  }
+
+  closeTaskModal(): void {
+    this.isTaskModalOpen = false;
+  }
+
+  cancelTaskModal(): void {
+    this.closeTaskModal();
+    this.resetTaskForm();
   }
 
   toggleTask(taskId: number): void {
     this.tasks = this.tasks.map((task) =>
       task.id === taskId ? { ...task, completed: !task.completed } : task,
     );
+    this.persistTasks();
   }
 
   deleteTask(taskId: number): void {
     this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    this.persistTasks();
   }
 
   get pendingCount(): number {
@@ -60,5 +84,15 @@ export class TaskListComponent {
 
   trackById(_: number, task: TaskItem): number {
     return task.id;
+  }
+
+  private resetTaskForm(): void {
+    this.taskForm = {
+      title: '',
+    };
+  }
+
+  private persistTasks(): void {
+    this.mockDataService.setTasks(this.tasks);
   }
 }
