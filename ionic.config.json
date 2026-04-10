@@ -1,0 +1,7 @@
+{
+  "name": "mi_app_frontend",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
